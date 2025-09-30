@@ -21,12 +21,21 @@ jdk:
   - openjdk-ea
 
 matrix:
-  include:
-    - os: linux-ppc64le
-      jdk: openjdk8
   allow_failures:
     - jdk: openjdk-ea
 
+before_install:
+- |
+  if [[ "$TRAVIS_JDK_VERSION" == "openjdk14" ]]; then
+  echo "fixing openjdk-14"
+  # Create the missing man directory structure
+  sudo mkdir -p /usr/share/man/man1
+  wget "https://download.bell-sw.com/java/14.0.2+13/bellsoft-jdk14.0.2+13-linux-amd64.deb"
+  sudo dpkg -i ./bellsoft-jdk14.0.2+13-linux-amd64.deb
+  export JAVA_HOME=/usr/lib/jvm/bellsoft-java14-amd64
+  sudo update-java-alternatives -s bellsoft-java14-amd64
+  fi
+  
 script:
   - mvn
 
